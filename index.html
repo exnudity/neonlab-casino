@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeonLab Casino</title>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #0ff3, #000 70%);
+      color:white;
+      text-align:center;
+    }
+    header {
+      padding:20px;
+      font-size:28px;
+      font-weight:bold;
+      color:#0ff;
+      text-shadow:0 0 15px #0ff,0 0 30px #f0f;
+    }
+    .wallet {
+      margin:10px auto;
+      padding:10px;
+      border:1px solid #0ff;
+      border-radius:12px;
+      width:250px;
+      box-shadow:0 0 20px #0ff6;
+    }
+    button {
+      padding:12px 18px;
+      margin:8px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:16px;
+      background:linear-gradient(90deg,#0ff,#f0f);
+      color:black;
+      font-weight:bold;
+      box-shadow:0 0 15px #0ff8;
+      transition:0.2s;
+    }
+    button:hover {
+      transform:scale(1.05);
+      box-shadow:0 0 25px #f0f;
+    }
+    .game {
+      margin-top:25px;
+      padding:15px;
+      border:1px solid #fff2;
+      border-radius:16px;
+      width:90%;
+      max-width:500px;
+      margin-left:auto;
+      margin-right:auto;
+      background:#111c;
+      box-shadow:0 0 25px #0ff3;
+    }
+    .slots {
+      font-size:40px;
+      letter-spacing:12px;
+      margin:15px;
+    }
+    .result {
+      margin-top:10px;
+      font-size:18px;
+      color:#ff0;
+      text-shadow:0 0 10px #ff0;
+    }
+  </style>
+</head>
+<body>
+
+<header>🎰 NeonLab Cyberpunk Casino 🎲</header>
+
+<div class="wallet">
+  💰 Solde : <span id="balance">1000</span> crédits
+</div>
+
+<div class="game">
+  <h2>Slots Machine</h2>
+  <div class="slots" id="slots">🍒 🍋 ⭐</div>
+  <button onclick
