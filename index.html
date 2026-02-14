@@ -6,34 +6,1222 @@
   <title>NeonLab Casino</title>
   <style>
     :root{
-      --bg:#05060a;
-      --panel:rgba(12,14,24,.72);
-      --panel2:rgba(10,12,20,.55);
-      --txt:#e8f7ff;
-      --muted:#97b6c9;
-      --neon:#21f6ff;
-      --mag:#ff3df3;
-      --gold:#ffd46b;
-      --bad:#ff5a7a;
-      --ok:#6dff9b;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --glow: 0 0 18px rgba(33,246,255,.35), 0 0 40px rgba(255,61,243,.20);
-      --r:18px;
+      --bg:#070812;
+      --panel: rgba(255,255,255,.05);
+      --panel2: rgba(255,255,255,.08);
+      --txt:#e9e9ff;
+      --muted:#a6a6d6;
+      --c1:#7c3aed;   /* violet */
+      --c2:#22d3ee;   /* cyan */
+      --c3:#fb7185;   /* rose */
+      --c4:#a3ff12;   /* lime */
+      --danger:#ff3b3b;
+      --ok:#2cff91;
+      --shadow: 0 16px 60px rgba(0,0,0,.55);
+      --radius: 18px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--txt);
       background:
-        radial-gradient(1000px 700px at 20% -10%, rgba(33,246,255,.18), transparent 60%),
-        radial-gradient(900px 700px at 90% 0%, rgba(255,61,243,.14), transparent 55%),
-        radial-gradient(900px 700px at 60% 120%, rgba(255,212,107,.10), transparent 55%),
-        linear-gradient(180deg,#04050a 0%, #070913 40%, #04050a 100%);
+        radial-gradient(1100px 700px at 20% 10%, rgba(124,58,237,.18), transparent 55%),
+        radial-gradient(1000px 650px at 80% 20%, rgba(34,211,238,.14), transparent 55%),
+        radial-gradient(1200px 800px at 50% 90%, rgba(251,113,133,.10), transparent 55%),
+        linear-gradient(180deg, #050611, #070812 40%, #05040f);
       overflow-x:hidden;
     }
-    .noise{
+
+    /* subtle animated grid */
+    .gridfx{
+      position:fixed; inset:0; pointer-events:none; opacity:.25;
+      background-image:
+        linear-gradient(rgba(34,211,238,.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,.10) 1px, transparent 1px);
+      background-size: 44px 44px;
+      transform: perspective(900px) rotateX(55deg) translateY(120px);
+      filter: blur(.2px);
+      animation: drift 14s linear infinite;
+      mask-image: radial-gradient(circle at 50% 55%, black 25%, transparent 72%);
+    }
+    @keyframes drift{to{background-position: 0 120px, 120px 0}}
+
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(7,8,18,.55);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:14px 14px;}
+    .top{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(34,211,238,.75), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(124,58,237,.85), transparent 60%),
+        linear-gradient(135deg, rgba(251,113,133,.55), rgba(34,211,238,.35));
+      box-shadow: 0 0 0 1px rgba(255,255,255,.10), 0 10px 30px rgba(124,58,237,.22);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute; inset:-10px;
+      background: radial-gradient(circle, rgba(34,211,238,.22), transparent 65%);
+      filter: blur(8px);
+      z-index:-1;
+    }
+    .title{
+      line-height:1.1;
+    }
+    .title b{display:block; font-size:15px; letter-spacing:.6px}
+    .title span{display:block; font-size:12px; color:var(--muted)}
+    .hud{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 8px 26px rgba(0,0,0,.25);
+      font-size:13px;
+    }
+    .pill .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: radial-gradient(circle, rgba(163,255,18,.9), rgba(44,255,145,.55));
+      box-shadow: 0 0 12px rgba(44,255,145,.35);
+    }
+    .pill small{color:var(--muted)}
+    .btn{
+      appearance:none; border:0;
+      padding:10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.20));
+      color:var(--txt);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 12px 30px rgba(0,0,0,.28);
+      font-weight:650;
+      cursor:pointer;
+      transition: transform .08s ease, filter .2s ease, border-color .2s ease;
+    }
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btn:hover{filter: brightness(1.06); border-color: rgba(255,255,255,.18)}
+    .btn.secondary{
+      background: rgba(255,255,255,.06);
+      font-weight:600;
+    }
+    .btn.danger{
+      background: linear-gradient(135deg, rgba(255,59,59,.20), rgba(251,113,133,.18));
+    }
+
+    main{max-width:1100px; margin:0 auto; padding:18px 14px 36px;}
+    .hero{
+      display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      margin-top:10px; margin-bottom:16px;
+    }
+    .hero .note{
+      flex:1;
+      min-width:260px;
+      padding:14px 16px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero .note:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(700px 220px at 20% 20%, rgba(34,211,238,.22), transparent 60%),
+                  radial-gradient(800px 300px at 90% 60%, rgba(124,58,237,.18), transparent 60%);
       pointer-events:none;
-      position:fixed; inset:0;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140'
+      filter: blur(0px);
+    }
+    .hero h1{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:.2px;
+      position:relative;
+    }
+    .hero p{
+      margin:0;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      position:relative;
+    }
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .tab{
+      padding:10px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
+      font-weight:650;
+      transition: all .2s ease;
+    }
+    .tab.active{
+      color: var(--txt);
+      background: linear-gradient(135deg, rgba(34,211,238,.20), rgba(124,58,237,.22));
+      box-shadow: 0 10px 26px rgba(0,0,0,.22);
+      border-color: rgba(255,255,255,.18);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:14px;
+    }
+    @media (max-width: 920px){
+      .grid{grid-template-columns:1fr}
+      .tabs{justify-content:flex-start}
+      .hud{justify-content:flex-start}
+    }
+
+    .card{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .card .head{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      background: rgba(0,0,0,.08);
+    }
+    .card .head b{font-size:14px; letter-spacing:.2px}
+    .card .head span{color:var(--muted); font-size:12px}
+    .card .body{padding:14px 16px}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .row > *{flex:1; min-width:140px}
+    .field{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding:10px 12px;
+    }
+    .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input[type="range"]{width:100%}
+    input[type="number"]{
+      width:100%;
+      background: transparent;
+      border:0;
+      color: var(--txt);
+      font-size:16px;
+      outline:none;
+    }
+
+    .toast{
+      position:fixed; left:50%; bottom:16px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.62);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      padding:10px 14px;
+      color:var(--txt);
+      box-shadow: 0 12px 34px rgba(0,0,0,.45);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .25s ease, transform .25s ease;
+      font-size:13px;
+      max-width: 92vw;
+      text-align:center;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-4px)}
+    .toast small{color:var(--muted)}
+
+    /* Slots */
+    .slotsWrap{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    .reels{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    .reel{
+      height:110px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      position:relative;
+      overflow:hidden;
+    }
+    .reel:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(circle at 50% 10%, rgba(34,211,238,.22), transparent 55%),
+                  radial-gradient(circle at 50% 90%, rgba(124,58,237,.20), transparent 55%);
+      pointer-events:none;
+    }
+    .symbol{
+      position:absolute; left:0; right:0; top:50%;
+      transform: translateY(-50%);
+      font-size: 46px;
+      text-align:center;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+    }
+    .payline{
+      height:2px;
+      background: linear-gradient(90deg, transparent, rgba(34,211,238,.55), rgba(124,58,237,.55), transparent);
+      margin-top:10px;
+      box-shadow: 0 0 18px rgba(34,211,238,.18);
+    }
+    .slotControls{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .slotControls .btn{flex:1; min-width:160px}
+    .mult{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .mult .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color:var(--muted);
+      font-weight:650;
+      cursor:pointer;
+      user-select:none;
+      transition: all .15s ease;
+    }
+    .mult .chip.active{
+      background: linear-gradient(135deg, rgba(251,113,133,.18), rgba(34,211,238,.18));
+      color: var(--txt);
+      border-color: rgba(255,255,255,.18);
+    }
+    .hint{color:var(--muted); font-size:12px; line-height:1.35}
+
+    /* Roulette */
+    .roulette{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      align-items:center;
+    }
+    @media (max-width: 540px){ .roulette{grid-template-columns:1fr} }
+    .wheel{
+      height:220px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+    }
+    .wheel .ring{
+      width:170px; height:170px; border-radius:50%;
+      background:
+        conic-gradient(
+          rgba(34,211,238,.85), rgba(124,58,237,.85), rgba(251,113,133,.85), rgba(163,255,18,.80),
+          rgba(34,211,238,.85)
+        );
+      filter: blur(.0px);
+      box-shadow: 0 0 0 2px rgba(255,255,255,.10), 0 24px 60px rgba(0,0,0,.45);
+      animation: spinSlow 10s linear infinite;
+    }
+    @keyframes spinSlow{to{transform:rotate(360deg)}}
+    .wheel .center{
+      position:absolute;
+      width:86px; height:86px; border-radius:50%;
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.12);
+      display:grid; place-items:center;
+      box-shadow: inset 0 0 20px rgba(124,58,237,.22);
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+    .wheel .pointer{
+      position:absolute; top:10px; left:50%;
+      transform: translateX(-50%);
+      width:0; height:0;
+      border-left:10px solid transparent;
+      border-right:10px solid transparent;
+      border-top:16px solid rgba(255,255,255,.85);
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.45));
+    }
+    .betGrid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+    }
+    .bet{
+      padding:12px 10px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      cursor:pointer;
+      user-select:none;
+      font-weight:800;
+      text-align:center;
+      transition: transform .08s ease, filter .2s ease, border-color .2s ease;
+    }
+    .bet:hover{filter:brightness(1.06); border-color: rgba(255,255,255,.18)}
+    .bet:active{transform: translateY(1px)}
+    .bet.red{box-shadow: 0 0 0 1px rgba(251,113,133,.22) inset}
+    .bet.black{box-shadow: 0 0 0 1px rgba(255,255,255,.10) inset}
+    .bet.green{box-shadow: 0 0 0 1px rgba(44,255,145,.22) inset}
+    .bet small{display:block; color:var(--muted); font-weight:650; margin-top:4px}
+
+    /* Blackjack */
+    .bj{
+      display:grid;
+      gap:12px;
+    }
+    .hand{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      padding:12px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+    }
+    .hand b{min-width:92px}
+    .cards{display:flex; gap:8px; flex-wrap:wrap}
+    .cardMini{
+      width:54px; height:72px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      display:grid; place-items:center;
+      font-weight:900;
+      box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    }
+    .cardMini.redTxt{color: rgba(251,113,133,.95)}
+    .cardMini.blackTxt{color: rgba(233,233,255,.95)}
+    .bjControls{display:flex; gap:10px; flex-wrap:wrap}
+    .bjControls .btn{flex:1; min-width:140px}
+
+    .rightCol .card{position:sticky; top:84px}
+    @media (max-width: 920px){ .rightCol .card{position:static} }
+
+    .miniList{
+      display:grid; gap:8px;
+      font-size:12px; color:var(--muted);
+    }
+    .miniList .li{
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .tag{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: var(--txt);
+      white-space:nowrap;
+    }
+    .tag.ok{border-color: rgba(44,255,145,.22); background: rgba(44,255,145,.08)}
+    .tag.bad{border-color: rgba(255,59,59,.22); background: rgba(255,59,59,.08)}
+    .tag.neon{border-color: rgba(34,211,238,.22); background: rgba(34,211,238,.08)}
+
+    footer{
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px 14px 28px;
+      color: var(--muted);
+      font-size:12px;
+      opacity:.95;
+    }
+    a{color: rgba(34,211,238,.95)}
+  </style>
+</head>
+<body>
+  <div class="gridfx"></div>
+
+  <header>
+    <div class="wrap">
+      <div class="top">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="title">
+            <b>NeonLab Casino</b>
+            <span>Play-money • GitHub Pages • Mobile friendly</span>
+          </div>
+        </div>
+
+        <div class="hud">
+          <div class="pill" title="Crédits (fictifs)">
+            <div class="dot"></div>
+            <div>
+              <div><small>Balance</small></div>
+              <div><b id="bal">5 000</b> <small>CR</small></div>
+            </div>
+          </div>
+          <button class="btn secondary" id="soundBtn">🔊 Son: ON</button>
+          <button class="btn danger" id="resetBtn">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="note">
+        <h1>Mode neon “clean” comme ton style — mais cette fois, ça joue pour vrai.</h1>
+        <p>Tout est 100% côté navigateur (aucun vrai argent, aucun compte). Tu mises des crédits fictifs, tu joues, ça gagne/perd, et c’est fluide sur Android.</p>
+      </div>
+      <div class="tabs" role="tablist">
+        <div class="tab active" data-tab="slots" role="tab" aria-selected="true">🎰 Slots</div>
+        <div class="tab" data-tab="blackjack" role="tab" aria-selected="false">🂡 Blackjack</div>
+        <div class="tab" data-tab="roulette" role="tab" aria-selected="false">🎯 Roulette</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="leftCol">
+        <!-- SLOTS -->
+        <section class="card" id="tab-slots">
+          <div class="head">
+            <b>Slots: Neon Triples</b>
+            <span id="slotsStatus">Prêt.</span>
+          </div>
+          <div class="body">
+            <div class="slotsWrap">
+              <div class="reels" aria-label="Machine à sous">
+                <div class="reel"><div class="symbol" id="r1">💎</div></div>
+                <div class="reel"><div class="symbol" id="r2">⚡</div></div>
+                <div class="reel"><div class="symbol" id="r3">🧪</div></div>
+              </div>
+              <div class="payline"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label>Mise (CR)</label>
+                  <input id="betSlots" type="number" min="10" step="10" value="100" />
+                </div>
+                <div class="field">
+                  <label>Vitesse</label>
+                  <input id="speed" type="range" min="0" max="100" value="55" />
+                </div>
+              </div>
+
+              <div class="mult">
+                <div class="chip active" data-mult="1">x1</div>
+                <div class="chip" data-mult="2">x2</div>
+                <div class="chip" data-mult="3">x3</div>
+                <div class="chip" data-mult="5">x5</div>
+                <div style="flex:1"></div>
+                <div class="hint">
+                  <div>Règles rapides:</div>
+                  <div>• 3 identiques = gros gain • 2 identiques = petit gain • 💎💎💎 jackpot</div>
+                </div>
+              </div>
+
+              <div class="slotControls">
+                <button class="btn" id="spinBtn">SPIN ⚡</button>
+                <button class="btn secondary" id="autoBtn">AUTO (10)</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BLACKJACK -->
+        <section class="card" id="tab-blackjack" style="display:none">
+          <div class="head">
+            <b>Blackjack: Neon 21</b>
+            <span id="bjStatus">Prêt.</span>
+          </div>
+          <div class="body">
+            <div class="row">
+              <div class="field">
+                <label>Mise (CR)</label>
+                <input id="betBJ" type="number" min="10" step="10" value="200" />
+              </div>
+              <div class="field">
+                <label>Objectif</label>
+                <div style="font-size:14px; color:var(--muted)">Bats le croupier sans dépasser 21.</div>
+              </div>
+            </div>
+
+            <div class="bj">
+              <div class="hand">
+                <b>Croupier</b>
+                <div class="cards" id="dealerCards"></div>
+                <div style="margin-left:auto"><span class="tag neon" id="dealerScore">0</span></div>
+              </div>
+
+              <div class="hand">
+                <b>Toi</b>
+                <div class="cards" id="playerCards"></div>
+                <div style="margin-left:auto"><span class="tag neon" id="playerScore">0</span></div>
+              </div>
+
+              <div class="bjControls">
+                <button class="btn" id="dealBtn">DEAL 🂡</button>
+                <button class="btn secondary" id="hitBtn" disabled>HIT ➕</button>
+                <button class="btn secondary" id="standBtn" disabled>STAND ✅</button>
+                <button class="btn danger" id="doubleBtn" disabled>DOUBLE 🎯</button>
+              </div>
+
+              <div class="hint">Paiements: Blackjack naturel = x2.5 • Victoire = x2 • Égalité = remboursement</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ROULETTE -->
+        <section class="card" id="tab-roulette" style="display:none">
+          <div class="head">
+            <b>Roulette: Neon Spin</b>
+            <span id="rouStatus">Prêt.</span>
+          </div>
+          <div class="body">
+            <div class="row">
+              <div class="field">
+                <label>Mise (CR)</label>
+                <input id="betRou" type="number" min="10" step="10" value="150" />
+              </div>
+              <div class="field">
+                <label>Choix</label>
+                <div style="font-size:14px; color:var(--muted)">Sélectionne un pari, puis SPIN.</div>
+              </div>
+            </div>
+
+            <div class="roulette">
+              <div class="wheel" aria-label="Roulette">
+                <div class="pointer"></div>
+                <div class="ring" id="ring"></div>
+                <div class="center"><span id="rouResult">—</span></div>
+              </div>
+
+              <div>
+                <div class="betGrid" id="betGrid">
+                  <div class="bet red" data-bet="red">ROUGE<small>x2</small></div>
+                  <div class="bet black" data-bet="black">NOIR<small>x2</small></div>
+                  <div class="bet green" data-bet="green">VERT (0)<small>x10</small></div>
+
+                  <div class="bet" data-bet="even">PAIR<small>x2</small></div>
+                  <div class="bet" data-bet="odd">IMPAIR<small>x2</small></div>
+                  <div class="bet" data-bet="high">19–36<small>x2</small></div>
+
+                  <div class="bet" data-bet="low">1–18<small>x2</small></div>
+                  <div class="bet" data-bet="dozen1">1–12<small>x3</small></div>
+                  <div class="bet" data-bet="dozen2">13–24<small>x3</small></div>
+
+                  <div class="bet" data-bet="dozen3">25–36<small>x3</small></div>
+                  <div class="bet" data-bet="neo7">NEO 7<small>x7</small></div>
+                  <div class="bet" data-bet="neo13">NEO 13<small>x8</small></div>
+                </div>
+
+                <div style="height:10px"></div>
+                <button class="btn" id="rouSpinBtn">SPIN 🎯</button>
+                <div class="hint" style="margin-top:10px">
+                  Roulette simplifiée: 0–36 (0 vert). Rouge/Noir approx équilibré, bonus “NEO 7/13”.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="rightCol">
+        <aside class="card">
+          <div class="head">
+            <b>Console neon</b>
+            <span>Historique</span>
+          </div>
+          <div class="body">
+            <div class="miniList" id="log"></div>
+            <div style="height:10px"></div>
+            <div class="hint">
+              Astuce: si la page ne s’update pas, ouvre en navigation privée ou force “Actualiser”.
+              <br/>Note: c’est une démo “play-money”, pas un vrai casino.
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    NeonLab Casino — démo locale (crédits fictifs). Hébergeable sur GitHub Pages sans installation.
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---------- Utils ----------
+    const $ = (s)=>document.querySelector(s);
+    const $$ = (s)=>Array.from(document.querySelectorAll(s));
+    const fmt = (n)=>new Intl.NumberFormat('fr-CA').format(n);
+
+    let balance = 5000;
+    let soundOn = true;
+    let slotsMult = 1;
+
+    const toast = $("#toast");
+    const logEl = $("#log");
+
+    function showToast(msg, sub=""){
+      toast.innerHTML = sub ? `${msg} <small>• ${sub}</small>` : msg;
+      toast.classList.add("show");
+      setTimeout(()=>toast.classList.remove("show"), 2200);
+    }
+
+    function addLog(title, tag, cls){
+      const row = document.createElement("div");
+      row.className = "li";
+      row.innerHTML = `<div>${title}</div><div class="tag ${cls||'neon'}">${tag}</div>`;
+      logEl.prepend(row);
+      // Keep last 12
+      while(logEl.children.length > 12) logEl.removeChild(logEl.lastChild);
+    }
+
+    function setBalance(n){
+      balance = Math.max(0, Math.floor(n));
+      $("#bal").textContent = fmt(balance);
+    }
+
+    function clampBet(v, min=10){
+      v = Number(v);
+      if (!Number.isFinite(v)) return min;
+      v = Math.floor(v);
+      if (v < min) v = min;
+      return v;
+    }
+
+    // Simple beep (no external files)
+    let audioCtx = null;
+    function beep(freq=440, dur=0.06, type="sine", vol=0.03){
+      if(!soundOn) return;
+      try{
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = freq;
+        g.gain.value = vol;
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        o.stop(audioCtx.currentTime + dur);
+      }catch(e){}
+    }
+
+    // ---------- Tabs ----------
+    $$(".tab").forEach(t=>{
+      t.addEventListener("click", ()=>{
+        $$(".tab").forEach(x=>x.classList.remove("active"));
+        t.classList.add("active");
+
+        const id = t.dataset.tab;
+        $("#tab-slots").style.display = (id==="slots") ? "" : "none";
+        $("#tab-blackjack").style.display = (id==="blackjack") ? "" : "none";
+        $("#tab-roulette").style.display = (id==="roulette") ? "" : "none";
+        beep(520, .05, "triangle", .03);
+      });
+    });
+
+    // ---------- Global Buttons ----------
+    $("#soundBtn").addEventListener("click", ()=>{
+      soundOn = !soundOn;
+      $("#soundBtn").textContent = soundOn ? "🔊 Son: ON" : "🔇 Son: OFF";
+      showToast(soundOn ? "Son activé" : "Son coupé");
+      if(soundOn) beep(660,.06,"sine",.03);
+    });
+
+    $("#resetBtn").addEventListener("click", ()=>{
+      setBalance(5000);
+      addLog("Reset balance", "5000 CR", "neon");
+      showToast("Balance reset", "5000 CR");
+      beep(220,.08,"sawtooth",.03);
+    });
+
+    // ---------- SLOTS ----------
+    const symbols = ["💎","⚡","🧪","👾","🍒","⭐","🔮","🦾"];
+    const rEls = [$("#r1"), $("#r2"), $("#r3")];
+    const slotsStatus = $("#slotsStatus");
+    let spinning = false;
+    let autoLeft = 0;
+
+    function randSym(){
+      return symbols[Math.floor(Math.random()*symbols.length)];
+    }
+
+    function payoutFor(a,b,c, bet){
+      // jackpot
+      if(a==="💎" && b==="💎" && c==="💎") return Math.floor(bet * 25);
+      // 3 same
+      if(a===b && b===c) return Math.floor(bet * 8);
+      // 2 same
+      if(a===b || b===c || a===c) return Math.floor(bet * 2.2);
+      // special combos
+      const set = new Set([a,b,c]);
+      if(set.size===3 && set.has("⚡") && set.has("👾") && set.has("🔮")) return Math.floor(bet * 6);
+      return 0;
+    }
+
+    async function spinOnce(){
+      if(spinning) return;
+      let bet = clampBet($("#betSlots").value, 10) * slotsMult;
+      $("#betSlots").value = bet / slotsMult;
+
+      if(balance < bet){
+        showToast("Pas assez de crédits", `Besoin: ${fmt(bet)} CR`);
+        addLog("Slots: mise refusée", `${fmt(bet)} CR`, "bad");
+        beep(160,.07,"square",.04);
+        autoLeft = 0;
+        $("#autoBtn").textContent = "AUTO (10)";
+        return;
+      }
+
+      spinning = true;
+      setBalance(balance - bet);
+      slotsStatus.textContent = "Spin...";
+      addLog("Slots: mise", `-${fmt(bet)} CR`, "bad");
+      beep(480,.05,"triangle",.03);
+
+      const speed = Number($("#speed").value);
+      const ticks = Math.floor(18 + (100 - speed) * 0.35); // faster => fewer ticks
+      const delayBase = Math.max(14, 80 - speed * 0.6);
+
+      // roll effect
+      for(let i=0;i<ticks;i++){
+        rEls.forEach(el=>el.textContent = randSym());
+        if(i%3===0) beep(520 + i*6, .02, "sine", .02);
+        await new Promise(r=>setTimeout(r, delayBase));
+      }
+
+      // final symbols
+      const final = [randSym(), randSym(), randSym()];
+      // slight bias for excitement (rare)
+      if(Math.random() < 0.05){
+        const s = randSym();
+        final[0]=s; final[1]=s;
+      }
+      if(Math.random() < 0.02){
+        const s = randSym();
+        final[0]=s; final[1]=s; final[2]=s;
+      }
+      rEls[0].textContent = final[0];
+      await new Promise(r=>setTimeout(r, 110));
+      rEls[1].textContent = final[1];
+      await new Promise(r=>setTimeout(r, 110));
+      rEls[2].textContent = final[2];
+
+      const win = payoutFor(final[0], final[1], final[2], bet);
+      if(win > 0){
+        setBalance(balance + win);
+        slotsStatus.textContent = `GAGNÉ: +${fmt(win)} CR`;
+        addLog("Slots: gain", `+${fmt(win)} CR`, "ok");
+        showToast("🔥 Gagné!", `+${fmt(win)} CR`);
+        beep(740,.06,"sine",.03); beep(880,.06,"sine",.03); beep(990,.08,"triangle",.03);
+      }else{
+        slotsStatus.textContent = "Perdu. Re-spin 😈";
+        addLog("Slots: perdu", `0`, "bad");
+        showToast("Perdu", "Re-spin");
+        beep(210,.07,"square",.03);
+      }
+
+      spinning = false;
+
+      if(autoLeft > 0){
+        autoLeft--;
+        $("#autoBtn").textContent = autoLeft ? `AUTO (${autoLeft})` : "AUTO (10)";
+        if(autoLeft > 0) setTimeout(spinOnce, 220);
+      }
+    }
+
+    $("#spinBtn").addEventListener("click", spinOnce);
+    $("#autoBtn").addEventListener("click", ()=>{
+      if(autoLeft > 0){
+        autoLeft = 0;
+        $("#autoBtn").textContent = "AUTO (10)";
+        showToast("Auto stoppé");
+        return;
+      }
+      autoLeft = 10;
+      $("#autoBtn").textContent = "AUTO (10)";
+      showToast("Auto lancé", "10 spins");
+      spinOnce();
+    });
+
+    $$(".chip").forEach(c=>{
+      c.addEventListener("click", ()=>{
+        $$(".chip").forEach(x=>x.classList.remove("active"));
+        c.classList.add("active");
+        slotsMult = Number(c.dataset.mult);
+        showToast("Multiplicateur", `x${slotsMult}`);
+        beep(600,.05,"triangle",.03);
+      });
+    });
+
+    // ---------- BLACKJACK ----------
+    const dealBtn = $("#dealBtn");
+    const hitBtn = $("#hitBtn");
+    const standBtn = $("#standBtn");
+    const doubleBtn = $("#doubleBtn");
+    const bjStatus = $("#bjStatus");
+
+    const dealerCardsEl = $("#dealerCards");
+    const playerCardsEl = $("#playerCards");
+    const dealerScoreEl = $("#dealerScore");
+    const playerScoreEl = $("#playerScore");
+
+    const suits = ["♠","♥","♦","♣"];
+    const ranks = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+    function cardValue(rank){
+      if(rank==="A") return 11;
+      if(["K","Q","J"].includes(rank)) return 10;
+      return Number(rank);
+    }
+
+    function drawCard(){
+      const s = suits[Math.floor(Math.random()*suits.length)];
+      const r = ranks[Math.floor(Math.random()*ranks.length)];
+      return {r,s};
+    }
+
+    function scoreHand(hand){
+      let total = 0;
+      let aces = 0;
+      for(const c of hand){
+        total += cardValue(c.r);
+        if(c.r==="A") aces++;
+      }
+      while(total > 21 && aces > 0){
+        total -= 10; // count ace as 1 instead of 11
+        aces--;
+      }
+      return total;
+    }
+
+    function renderHand(el, hand){
+      el.innerHTML = "";
+      hand.forEach(c=>{
+        const d = document.createElement("div");
+        const isRed = (c.s==="♥" || c.s==="♦");
+        d.className = "cardMini " + (isRed ? "redTxt" : "blackTxt");
+        d.textContent = c.r + c.s;
+        el.appendChild(d);
+      });
+    }
+
+    let bjBet = 0;
+    let bjInRound = false;
+    let player = [];
+    let dealer = [];
+    let hidden = true;
+
+    function setBJButtons(state){
+      hitBtn.disabled = !state;
+      standBtn.disabled = !state;
+      doubleBtn.disabled = !state;
+    }
+
+    function endBJ(){
+      bjInRound = false;
+      setBJButtons(false);
+      hidden = false;
+      renderHand(dealerCardsEl, dealer);
+      dealerScoreEl.textContent = scoreHand(dealer);
+    }
+
+    function payoutBJ(mult){
+      const win = Math.floor(bjBet * mult);
+      setBalance(balance + win);
+      addLog("Blackjack: payout", `+${fmt(win)} CR`, "ok");
+      showToast("Paiement", `+${fmt(win)} CR`);
+      beep(820,.06,"sine",.03); beep(980,.07,"triangle",.03);
+    }
+
+    function settleBJ(){
+      const ps = scoreHand(player);
+      let ds = scoreHand(dealer);
+
+      // dealer draws to 17
+      while(ds < 17){
+        dealer.push(drawCard());
+        ds = scoreHand(dealer);
+      }
+
+      endBJ();
+
+      const finalPs = scoreHand(player);
+      const finalDs = scoreHand(dealer);
+
+      if(finalPs > 21){
+        bjStatus.textContent = "BUST. Perdu.";
+        addLog("Blackjack: bust", "Perdu", "bad");
+        showToast("BUST", "Perdu");
+        beep(180,.08,"square",.03);
+        return;
+      }
+
+      if(finalDs > 21){
+        bjStatus.textContent = "Croupier BUST. Tu gagnes!";
+        payoutBJ(2);
+        return;
+      }
+
+      if(finalPs === 21 && player.length === 2){
+        bjStatus.textContent = "BLACKJACK naturel! 🔥";
+        payoutBJ(2.5);
+        return;
+      }
+
+      if(finalPs > finalDs){
+        bjStatus.textContent = "Victoire!";
+        payoutBJ(2);
+        return;
+      }
+      if(finalPs < finalDs){
+        bjStatus.textContent = "Perdu.";
+        addLog("Blackjack: perdu", "Perdu", "bad");
+        showToast("Perdu", "Croupier gagne");
+        beep(200,.08,"square",.03);
+        return;
+      }
+
+      // push
+      bjStatus.textContent = "Égalité (push). Remboursé.";
+      setBalance(balance + bjBet);
+      addLog("Blackjack: push", `+${fmt(bjBet)} CR`, "neon");
+      showToast("Push", `+${fmt(bjBet)} CR`);
+      beep(520,.06,"triangle",.03);
+    }
+
+    dealBtn.addEventListener("click", ()=>{
+      if(bjInRound) return;
+
+      bjBet = clampBet($("#betBJ").value, 10);
+      if(balance < bjBet){
+        showToast("Pas assez de crédits", `Besoin: ${fmt(bjBet)} CR`);
+        addLog("Blackjack: mise refusée", `${fmt(bjBet)} CR`, "bad");
+        beep(160,.07,"square",.04);
+        return;
+      }
+
+      bjInRound = true;
+      setBalance(balance - bjBet);
+      addLog("Blackjack: mise", `-${fmt(bjBet)} CR`, "bad");
+      bjStatus.textContent = "Distribution...";
+      beep(520,.05,"triangle",.03);
+
+      player = [drawCard(), drawCard()];
+      dealer = [drawCard(), drawCard()];
+      hidden = true;
+
+      renderHand(playerCardsEl, player);
+
+      // hide dealer 2nd card visually by rendering a "??"
+      dealerCardsEl.innerHTML = "";
+      dealer.forEach((c, idx)=>{
+        const d = document.createElement("div");
+        d.className = "cardMini " + (((c.s==="♥"||c.s==="♦") && idx===0) ? "redTxt" : "blackTxt");
+        d.textContent = idx===1 ? "??" : (c.r + c.s);
+        dealerCardsEl.appendChild(d);
+      });
+
+      const ps = scoreHand(player);
+      const dsShown = cardValue(dealer[0].r); // approximate shown
+      playerScoreEl.textContent = ps;
+      dealerScoreEl.textContent = dsShown;
+
+      setBJButtons(true);
+      doubleBtn.disabled = false;
+
+      if(ps === 21){
+        // immediate settle
+        bjStatus.textContent = "21! On règle...";
+        setTimeout(settleBJ, 380);
+      }else{
+        bjStatus.textContent = "À toi.";
+      }
+    });
+
+    hitBtn.addEventListener("click", ()=>{
+      if(!bjInRound) return;
+      player.push(drawCard());
+      renderHand(playerCardsEl, player);
+      const ps = scoreHand(player);
+      playerScoreEl.textContent = ps;
+      beep(610,.05,"sine",.03);
+
+      doubleBtn.disabled = true; // only before first hit
+      if(ps > 21){
+        endBJ();
+        bjStatus.textContent = "BUST. Perdu.";
+        addLog("Blackjack: bust", "Perdu", "bad");
+        showToast("BUST", "Perdu");
+        beep(180,.08,"square",.03);
+      }
+    });
+
+    standBtn.addEventListener("click", ()=>{
+      if(!bjInRound) return;
+      bjStatus.textContent = "Croupier joue...";
+      beep(440,.05,"triangle",.03);
+      setTimeout(settleBJ, 350);
+    });
+
+    doubleBtn.addEventListener("click", ()=>{
+      if(!bjInRound) return;
+      if(balance < bjBet){
+        showToast("Pas assez de crédits", "Double impossible");
+        beep(170,.07,"square",.04);
+        return;
+      }
+      // take extra bet
+      setBalance(balance - bjBet);
+      bjBet = bjBet * 2;
+      addLog("Blackjack: double", `Mise: ${fmt(bjBet)} CR`, "neon");
+      showToast("DOUBLE", `Mise: ${fmt(bjBet)} CR`);
+      beep(760,.05,"sine",.03);
+
+      // one card then stand
+      player.push(drawCard());
+      renderHand(playerCardsEl, player);
+      const ps = scoreHand(player);
+      playerScoreEl.textContent = ps;
+      setBJButtons(false);
+      bjStatus.textContent = "Double: 1 carte, puis croupier...";
+      setTimeout(settleBJ, 380);
+    });
+
+    // ---------- ROULETTE ----------
+    const rouStatus = $("#rouStatus");
+    const rouResult = $("#rouResult");
+    const ring = $("#ring");
+    const rouSpinBtn = $("#rouSpinBtn");
+    let rouBetType = null;
+
+    const reds = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]); // common mapping
+
+    function betPayout(type){
+      if(type==="green") return 10;
+      if(type==="dozen1"||type==="dozen2"||type==="dozen3") return 3;
+      if(type==="neo7") return 7;
+      if(type==="neo13") return 8;
+      return 2;
+    }
+
+    function betWins(type, n){
+      if(type==="green") return n===0;
+      if(type==="red") return n!==0 && reds.has(n);
+      if(type==="black") return n!==0 && !reds.has(n);
+      if(type==="even") return n!==0 && n%2===0;
+      if(type==="odd") return n%2===1;
+      if(type==="low") return n>=1 && n<=18;
+      if(type==="high") return n>=19 && n<=36;
+      if(type==="dozen1") return n>=1 && n<=12;
+      if(type==="dozen2") return n>=13 && n<=24;
+      if(type==="dozen3") return n>=25 && n<=36;
+      if(type==="neo7") return n===7;
+      if(type==="neo13") return n===13;
+      return false;
+    }
+
+    $$("#betGrid .bet").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        $$("#betGrid .bet").forEach(x=>x.style.outline="none");
+        b.style.outline = "2px solid rgba(34,211,238,.55)";
+        b.style.outlineOffset = "2px";
+        rouBetType = b.dataset.bet;
+        showToast("Pari sélectionné", rouBetType.toUpperCase());
+        beep(600,.05,"triangle",.03);
+      });
+    });
+
+    rouSpinBtn.addEventListener("click", async ()=>{
+      if(!rouBetType){
+        showToast("Choisis un pari d’abord", "ex: ROUGE");
+        beep(160,.07,"square",.04);
+        return;
+      }
+
+      let bet = clampBet($("#betRou").value, 10);
+      if(balance < bet){
+        showToast("Pas assez de crédits", `Besoin: ${fmt(bet)} CR`);
+        addLog("Roulette: mise refusée", `${fmt(bet)} CR`, "bad");
+        beep(160,.07,"square",.04);
+        return;
+      }
+
+      setBalance(balance - bet);
+      addLog(`Roulette: mise ${rouBetType}`, `-${fmt(bet)} CR`, "bad");
+      rouStatus.textContent = "Spin...";
+      beep(520,.05,"triangle",.03);
+
+      // animation
+      ring.style.animation = "none";
+      void ring.offsetWidth;
+      const turns = 6 + Math.random()*4;
+      const deg = 360*turns + Math.random()*360;
+      ring.style.transition = "transform 2.3s cubic-bezier(.1,.8,.1,1)";
+      ring.style.transform = `rotate(${deg}deg)`;
+      for(let i=0;i<9;i++){ setTimeout(()=>beep(520+i*40,.02,"sine",.02), i*140); }
+
+      await new Promise(r=>setTimeout(r, 2350));
+
+      // roll number (0-36)
+      const n = Math.floor(Math.random()*37);
+      const color = (n===0) ? "VERT" : (reds.has(n) ? "ROUGE" : "NOIR");
+      rouResult.textContent = n;
+      rouStatus.textContent = `${n} • ${color}`;
+
+      const win = betWins(rouBetType, n);
+      if(win){
+        const mult = betPayout(rouBetType);
+        const payout = Math.floor(bet * mult);
+        setBalance(balance + payout);
+        addLog(`Roulette: gagné ${rouBetType}`, `+${fmt(payout)} CR`, "ok");
+        showToast("🎯 Gagné!", `+${fmt(payout)} CR`);
+        beep(780,.06,"sine",.03); beep(940,.06,"triangle",.03);
+      }else{
+        addLog(`Roulette: perdu ${rouBetType}`, "0", "bad");
+        showToast("Perdu", `${n} • ${color}`);
+        beep(200,.08,"square",.03);
+      }
+
+      // reset wheel motion (keep last position)
+      setTimeout(()=>{
+        ring.style.transition = "none";
+      }, 120);
+    });
+
+    // ---------- Init ----------
+    function init(){
+      setBalance(Number(localStorage.getItem("neonlab_balance") || 5000));
+      soundOn = (localStorage.getItem("neonlab_sound") ?? "1") === "1";
+      $("#soundBtn").textContent = soundOn ? "🔊 Son: ON" : "🔇 Son: OFF";
+      addLog("Bienvenue", "Play-money", "neon");
+      showToast("NeonLab prêt", "Choisis un jeu");
+    }
+
+    // persist
+    setInterval(()=>{
+      localStorage.setItem("neonlab_balance", String(balance));
+      localStorage.setItem("neonlab_sound", soundOn ? "1" : "0");
+    }, 800);
+
+    init();
+  </script>
+</body>
+                  </html>
